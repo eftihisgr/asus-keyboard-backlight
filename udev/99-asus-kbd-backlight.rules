@@ -1,0 +1,18 @@
+# Author:      Eftychios Papasifakis
+# File:        udev/99-asus-kbd-backlight.rules
+# Project:     ASUS Keyboard Backlight (asus-keyboard-backlight)
+# SPDX-License-Identifier: MIT
+#
+# Description:
+#   udev rule that install.sh copies to /etc/udev/rules.d
+#
+#   The asus-wmi driver creates the keyboard backlight files as root only
+#   This rule makes brightness and kbd_rgb_mode writable by all users so
+#   the app does not need root
+#   These files only control the keyboard light
+#
+#   When the LED device appears udev runs chmod on its two files
+#   %p is the device path inside /sys
+
+ACTION=="add", SUBSYSTEM=="leds", KERNEL=="asus::kbd_backlight", \
+  RUN+="/usr/bin/chmod a+w /sys%p/brightness /sys%p/kbd_rgb_mode"

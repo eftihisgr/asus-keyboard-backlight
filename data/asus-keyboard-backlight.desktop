@@ -1,0 +1,16 @@
+# Author:      Eftychios Papasifakis
+# File:        data/asus-keyboard-backlight.desktop
+# Project:     ASUS Keyboard Backlight (asus-keyboard-backlight)
+# SPDX-License-Identifier: MIT
+#
+# Description:
+#   App menu entry for the GUI
+#   CMake installs it to share/applications so it shows up in the app menu
+
+[Desktop Entry]
+Type=Application
+Name=ASUS Keyboard Backlight
+Comment=Change the keyboard backlight color on ASUS TUF laptops
+Exec=asus-kbd-backlight-gui
+Icon=input-keyboard
+Categories=Settings;HardwareSettings;
