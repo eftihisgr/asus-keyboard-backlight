@@ -1,10 +1,10 @@
 # ASUS Keyboard Backlight
 
-Change the RGB keyboard backlight of ASUS TUF laptops on Linux — the
+Change the RGB keyboard backlight of ASUS TUF laptops on Linux. It sets the
 color, effect and brightness you would otherwise set in Armoury Crate on Windows.
 
 Tested on the **ASUS TUF Gaming A15 (FA507NU)** with Ubuntu.
-Other TUF models with a single-zone RGB keyboard should work too.
+Other TUF models with a single zone RGB keyboard should work too.
 
 This is an unofficial project and is not affiliated with ASUS.
 
@@ -14,15 +14,15 @@ The `asus-wmi` kernel driver already exposes the keyboard backlight in sysfs:
 
 | File | Purpose |
 |------|---------|
-| `/sys/class/leds/asus::kbd_backlight/brightness` | brightness level (`0`–`3`) |
+| `/sys/class/leds/asus::kbd_backlight/brightness` | brightness level from `0` to `3` |
 | `/sys/class/leds/asus::kbd_backlight/kbd_rgb_mode` | `cmd mode red green blue speed` |
 
 This project is a thin layer on top of that:
 
 ```
 src/kbd.c, kbd.h   C library: open()/write() on the sysfs files
-src/cli.c          asus-kbd-backlight      — command-line tool (C)
-src/gui/main.cpp   asus-kbd-backlight-gui  — graphical window (C++ / Qt6)
+src/cli.c          asus-kbd-backlight: command line tool (C)
+src/gui/main.cpp   asus-kbd-backlight-gui: graphical window (C++ / Qt6)
 udev/              rule that lets normal users write those files
 ```
 
@@ -63,7 +63,7 @@ asus-kbd-backlight status
 
 ## Permissions
 
-The kernel creates the sysfs files as root-only. The udev rule in
+The kernel creates the sysfs files as root only. The udev rule in
 `udev/99-asus-kbd-backlight.rules` makes `brightness` and `kbd_rgb_mode`
 writable by all users, so the app does not need to run as root. These files
 control only the keyboard light.
@@ -76,4 +76,4 @@ sudo xargs rm < build/install_manifest.txt
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
