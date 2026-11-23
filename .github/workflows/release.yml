@@ -1,0 +1,57 @@
+# Author:      Eftychios Papasifakis
+# File:        .github/workflows/release.yml
+# Project:     ASUS Keyboard Backlight (asus-keyboard-backlight)
+# SPDX-License-Identifier: MIT
+#
+# Description:
+#   Builds the deb package and publishes it as a GitHub Release
+#   Runs when a version tag like v0.1.0 is pushed
+#
+#   It builds on Ubuntu 24.04 so the package works on 24.04 and every newer
+#   Ubuntu release because a package built on a newer system would need
+#   newer library versions
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+# Needed to create the release and upload the package
+permissions:
+  contents: write
+
+jobs:
+  deb:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # The tag must match the version in CMakeLists.txt so the package name is right
+      - name: Check version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if ! grep -q "VERSION $version " CMakeLists.txt; then
+            echo "Tag $GITHUB_REF_NAME does not match the project VERSION in CMakeLists.txt"
+            exit 1
+          fi
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake qt6-base-dev dpkg-dev
+
+      # Install under /usr with the udev rule where packages put them
+      - name: Build
+        run: |
+          cmake -S . -B build-deb -DCMAKE_BUILD_TYPE=Release -DUDEV_RULES_DIR=/usr/lib/udev/rules.d
+          cmake --build build-deb
+
+      - name: Package
+        run: cd build-deb && cpack -G DEB
+
+      # gh is preinstalled on GitHub runners so no third party action is needed
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" build-deb/*.deb --generate-notes

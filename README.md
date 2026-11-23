@@ -31,16 +31,32 @@ without a background service.
 
 ## Requirements
 
-```sh
-sudo apt install build-essential cmake qt6-base-dev
-```
-
-Your kernel must have `/sys/class/leds/asus::kbd_backlight/kbd_rgb_mode`
-(Linux 6.1 or newer).
+Ubuntu 24.04 or newer, and a kernel that has
+`/sys/class/leds/asus::kbd_backlight/kbd_rgb_mode` (Linux 6.1 or newer).
 
 ## Install
 
+Download the `.deb` file from the
+[latest release](https://github.com/eftihisgr/asus-keyboard-backlight/releases/latest)
+and install it:
+
 ```sh
+sudo apt install ./asus-keyboard-backlight_*_amd64.deb
+```
+
+`apt` installs the Qt6 libraries it needs. The package also installs the udev
+rule and applies it right away, so no reboot is needed.
+
+To uninstall:
+
+```sh
+sudo apt remove asus-keyboard-backlight
+```
+
+## Build from source
+
+```sh
+sudo apt install build-essential cmake qt6-base-dev
 ./install.sh
 ```
 
@@ -48,6 +64,23 @@ This builds the project, installs `asus-kbd-backlight` and `asus-kbd-backlight-g
 `/usr/local/bin`, adds a desktop entry, and installs the udev rule.
 
 To build without the GUI: `cmake -S . -B build -DBUILD_GUI=OFF`.
+
+To uninstall a source build:
+
+```sh
+sudo xargs rm < build/install_manifest.txt
+```
+
+## Making a release
+
+Set the version in `CMakeLists.txt`, then push a tag with the same version:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions builds the `.deb` on Ubuntu 24.04 and publishes it as a release.
 
 ## Usage
 
@@ -67,12 +100,6 @@ The kernel creates the sysfs files as root only. The udev rule in
 `udev/99-asus-kbd-backlight.rules` makes `brightness` and `kbd_rgb_mode`
 writable by all users, so the app does not need to run as root. These files
 control only the keyboard light.
-
-## Uninstall
-
-```sh
-sudo xargs rm < build/install_manifest.txt
-```
 
 ## License
 

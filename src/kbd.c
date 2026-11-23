@@ -107,7 +107,7 @@ int kbd_get_max_brightness(int *level)
 int kbd_set_brightness(int level)
 {
 	char value[16];
-	int max, ret;
+	int max = 0, ret;
 
 	/* Check the range here so the caller gets a clear EINVAL */
 	ret = kbd_get_max_brightness(&max);

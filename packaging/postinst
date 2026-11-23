@@ -1,0 +1,19 @@
+#!/bin/sh
+# Author:      Eftychios Papasifakis
+# File:        packaging/postinst
+# Project:     ASUS Keyboard Backlight (asus-keyboard-backlight)
+# SPDX-License-Identifier: MIT
+#
+# Description:
+#   Runs after the deb package is installed
+#   Loads the new udev rule and applies it to the keyboard LED device now
+#   so the app works without a reboot
+
+set -e
+
+if [ "$1" = "configure" ]; then
+    # Do not fail the install on machines without udev or without the device
+    udevadm control --reload-rules || true
+    udevadm trigger --action=add --subsystem-match=leds \
+        --sysname-match='asus::kbd_backlight' || true
+fi

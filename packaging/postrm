@@ -1,0 +1,16 @@
+#!/bin/sh
+# Author:      Eftychios Papasifakis
+# File:        packaging/postrm
+# Project:     ASUS Keyboard Backlight (asus-keyboard-backlight)
+# SPDX-License-Identifier: MIT
+#
+# Description:
+#   Runs after the deb package is removed
+#   Tells udev to forget the removed rule
+#   The file permissions go back to root only on the next reboot
+
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    udevadm control --reload-rules || true
+fi

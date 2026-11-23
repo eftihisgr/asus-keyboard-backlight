@@ -41,4 +41,27 @@ endif()
 
 # udev rule that lets normal users write the keyboard backlight files
 # It uses an absolute path because udev only reads rules from /etc and /usr
-install(FILES udev/99-asus-kbd-backlight.rules DESTINATION /etc/udev/rules.d)
+# install.sh uses /etc and the deb package uses /usr/lib/udev/rules.d
+set(UDEV_RULES_DIR "/etc/udev/rules.d" CACHE PATH "Directory for the udev rule")
+install(FILES udev/99-asus-kbd-backlight.rules DESTINATION ${UDEV_RULES_DIR})
+
+# Debian package for releases built with: cpack -G DEB
+# Files go under /usr and dpkg-shlibdeps finds the library dependencies like Qt6
+set(CPACK_PACKAGE_NAME "asus-keyboard-backlight")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Change the RGB keyboard backlight of ASUS TUF laptops")
+set(CPACK_PACKAGE_CONTACT "Eftychios Papasifakis <eftihisgr@users.noreply.github.com>")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/eftihisgr/asus-keyboard-backlight")
+set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# Package folders get the normal 755 mode no matter what umask the build machine has
+set(CPACK_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+# Scripts that reload udev after install and removal so no reboot is needed
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+    "${CMAKE_SOURCE_DIR}/packaging/postinst;${CMAKE_SOURCE_DIR}/packaging/postrm")
+set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
+
+include(CPack)
